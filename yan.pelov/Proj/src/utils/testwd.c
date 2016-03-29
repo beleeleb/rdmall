@@ -49,7 +49,6 @@ int main(void)
 
 	set_signal_handler(SIGUSR1, &ping);
 
-	char path[20];
 	struct sched_data *mydata;
 	mydata = (struct sched_data *)malloc(sizeof(struct sched_data));
 	mydata->pid = getppid();

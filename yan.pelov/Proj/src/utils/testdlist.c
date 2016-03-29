@@ -22,7 +22,7 @@ int main (int argc, char** argv, char** evmp)
 	func find_func =&find_val;
 	
 	new_list = dlist_create();
-	/*
+
 	new_tmp = dlist_head(new_list);
 	
 	dlist_insert_after(new_tmp, (dl_data)50);
@@ -37,7 +37,7 @@ int main (int argc, char** argv, char** evmp)
 	res = dlist_find(from, to,find_func, (void*) 50);
 	
 	dlist_remove(res);
-	dlist_destroy(new_list);*/
+	dlist_destroy(new_list);
 
 	return 0;
 }
