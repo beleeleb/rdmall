@@ -1,0 +1,15 @@
+spawn svn commit --message \"commited\" 
+
+expect {
+    "yan.pelov@31.168.84.220's password:*" {
+        send -- "310685565\r"
+        exp_continue
+    }
+
+     "yan.pelov@labotomy.local's password:*" {
+        send -- "310685565\r"
+        exp_continue
+    }
+
+    eof  
+}

@@ -1,0 +1,39 @@
+#RD3 10.12.2014
+ARFLAGS = -crs
+AR = /usr/bin/ar $(ARFLAGS)
+RM = /bin/rm -f
+LN = /bin/ln -fs
+GREP = /bin/grep
+MAKE = /usr/bin/make
+
+ARCH = linux64#choose your arch
+
+#ARCH = raspi
+
+PROJ_DIR = $(HOME)/work/cpp
+INC_DIR = $(PROJ_DIR)/include
+SRC_DIR = $(PROJ_DIR)/src
+
+CC = /usr/bin/gcc
+CPP = /usr/bin/g++ 
+
+DEBUG_FLAGS = -g -DDEBUG -UNDEBUG
+RELEASE_FLAGS = -O3 -UDEBUG -DNDEBUG 
+
+CPPDEBUG_FLAGS = $(DEBUG_FLAGS)
+CPPRELEASE_FLAGS = $(RELEASE_FLAGS)
+
+LIB_DIR = $(PROJ_DIR)/arch/$(ARCH)/libs
+BIN_DIR = $(PROJ_DIR)/arch/$(ARCH)/bin
+LDFLAGS = -L$(LIB_DIR) -L/usr/include/boost
+
+CFLAGS= -Wall -ansi -std=c89 -I$(INC_DIR) #-pedantic -Werror
+CPPFLAGS= -Wall -pedantic -I/usr/include/boost -std=c++11#?? -ansi -Werror
+
+ifeq ($(ARCH),raspi) #instead of /home/guy/Dropbox/ write your own directory where you saved boost for rpi. 
+AR = /rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-ar $(ARFLAGS)
+CPP = /rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-g++ 
+CPPFLAGS = -Wall -pedantic -std=c++11 -I/home/student/Dropbox/boost_1_49_0 
+LDFLAGS = -L$(LIB_DIR) -L/home/student/Dropbox/boost_1_49_0/stage/lib 
+endif
+

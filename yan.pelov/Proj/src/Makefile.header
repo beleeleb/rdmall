@@ -1,0 +1,36 @@
+#RD3 10.12.2014
+ARFLAGS = -crs
+AR = /usr/bin/ar $(ARFLAGS)
+RM = /bin/rm -f
+LN = /bin/ln -fs
+GREP = /bin/grep
+MAKE = /usr/bin/make
+
+#../..
+PROJ_DIR = $(HOME)/Dropbox/myeclipse20__7_15/yan.pelov/Proj
+INC_DIR = $(PROJ_DIR)/include
+SRC_DIR = $(PROJ_DIR)/src
+
+CC = /usr/bin/gcc
+CPP = /usr/bin/g++
+
+DEBUG_FLAGS = -g -DDEBUG -UNDEBUG
+RELEASE_FLAGS = -O3 -UDEBUG -DNDEBUG 
+
+CPPDEBUG_FLAGS = $(DEBUG_FLAGS)
+CPPRELEASE_FLAGS = $(RELEASE_FLAGS)
+
+CFLAGS= -Wall -ansi -std=c89 -I$(INC_DIR) -Wl,-undefined,dynamic_lookup#-pedantic -Werror
+CPPFLAGS= -Wall -pedantic -std=c++98 -I$(INC_DIR) #?? -ansi -Werror
+
+ARCH = linux64
+
+#ARCH = raspi
+ifeq ($(ARCH),raspi)
+CC = echo
+AR = echo
+endif
+
+LIB_DIR = $(PROJ_DIR)/arch/$(ARCH)/libs
+BIN_DIR = $(PROJ_DIR)/arch/$(ARCH)/bin
+LDFLAGS = -L$(LIB_DIR)

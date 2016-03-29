@@ -1,0 +1,162 @@
+#RD3 11.12.2014
+
+OBJ_DIR=$(PROJ_DIR)/arch/$(ARCH)/$(MODULE)/objs
+DBG_LIBS := $(PROJ_LIBS:%=%.dbg) $(LIBS)
+LIBS := $(PROJ_LIBS) $(LIBS)
+
+LIB_NAME = lib$(MODULE).a
+DBG_LIB_NAME = lib$(MODULE).dbg.a
+
+#added to be used by clean. does NOT remove for c++.
+# (WARNING: don't do  ' INC_DIR_NAME= *.h *.hh' )
+LIBS_DIR_NAME = *.so     
+INC_DIR_C_NAME = *.h
+INC_DIR_CPP_NAME = *.h
+BIN_DIR_NAME = *.out 
+
+FILE_ROOTS = $(CFILE_ROOTS) $(CPPFILE_ROOTS)
+	
+OBJS = $(FILE_ROOTS:%=%.o)
+
+CDBG_OBJS = $(CFILE_ROOTS:%=%.dbg.o)
+CPPDBG_OBJS = $(CPPFILE_ROOTS:%=%.dbg.o)
+DBG_OBJS = $(CDBG_OBJS) $(CPPDBG_OBJS)
+
+#added to create .so files (by "shared" )
+C_SHARED_OBJS = $(CFILE_ROOTS:%=lib%.so)
+CPP_SHARED_OBJS = $(CPPFILE_ROOTS:%=lib%.so)
+SHARED_OBJS = $(C_SHARED_OBJS) $(CPP_SHARED_OBJS)
+
+CDBG_SHARED_OBJS = $(CFILE_ROOTS:%=lib%.dbg.so)
+CPPDBG_SHARED_OBJS = $(CPPFILE_ROOTS:%=lib%.dbg.so)
+DBG_SHARED_OBJS = $(CDBG_SHARED_OBJS) $(CPPDBG_SHARED_OBJS)
+
+
+CINC_FILES = $(STAND_ALONE_H_FILES:%=$(PWD)/%.h) $(CFILE_ROOTS:%=$(PWD)/%.h)
+CSRC_FILES = $(CFILE_ROOTS:%=%.c)define: prerequisite
+
+CPPINC_FILES = $(STAND_ALONE_CPPH_FILES:%=$(PWD)/%.h) $(CPPFILE_ROOTS:%=$(PWD)/%.h)
+CPPSRC_FILES = $(CPPFILE_ROOTS:%=%.cpp)
+
+INC_FILES = $(CINC_FILES) $(CPPINC_FILES)
+SRC_FILES = $(CSRC_FILES) $(CPPSRC_FILES)
+
+TEST_NAME = test$(MODULE).out
+TEST_FILES = $(FILE_ROOTS:%=test%.out)
+DBG_TEST_NAME = test$(MODULE).dbg.out
+DBG_TEST_FILES = $(FILE_ROOTS:%=test%.dbg.out)
+
+.PHONY: all
+all: include debug release shared dSYM
+
+.PHONY: debug
+debug: $(DBG_LIB_NAME) $(DBG_TEST_FILES)
+
+.PHONY: release
+release: $(LIB_NAME) $(TEST_FILES) 
+
+.PHONY: test
+test: libs $(TEST_NAME) $(TEST_FILES) $(DBG_TEST_NAME) $(DBG_TEST_FILES)
+
+.PHONY: include
+include: 
+	$(LN) $(INC_FILES) $(INC_DIR)
+
+.PHONY: shared
+shared: $(SHARED_OBJS) $(DBG_SHARED_OBJS) 
+
+#there should be a way to not have make include run when the links already exist...
+depend: 
+	makedepend -I$(INC_DIR) $(SRC_FILES) $(INC_FILES) 2> /dev/null
+
+libs: $(LIB_NAME) $(DBG_LIB_NAME)
+
+$(TEST_NAME): $(LIB_NAME) 
+	if echo $(@) | $(GREP) -q '.cpp$'; then
+		$(CPP) $(CPPFLAGS) $(CPPRELEASE_FLAGS) test$(MODULE).o $(LDFLAGS) $(LIBS) -o $(@)
+	else
+		$(CC) $(CFLAGS) $(RELEASE_FLAGS) test$(MODULE).o $(LDFLAGS) $(LIBS) -o $(@)
+	fi
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+
+$(DBG_TEST_LIBSNAME): $(DBG_LIB_NAME) 
+	if echo $(@) | $(GREP) -q '.cpp$'; then
+		$(CPP) $(CPPFLAGS) $(CPPDEBUG_FLAGS) test$(MODULE).o $(LDFLAGS) $(DBG_LIBS) -o $(@)
+	else
+		$(CC) $(CFLAGS) $(DEBUG_FLAGS) test$(MODULE).o $(LDFLAGS) $(DBG_LIBS) -o $(@)
+	fi
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+
+$(LIB_NAME): $(OBJS) 
+	$(AR) $(@) $(OBJS)
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+$(DBG_LIB_NAME): $(DBG_OBJS) 
+	$(AR) $(@) $(DBG_OBJS) 			
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+.PHONY: dSYM
+dSYM: 	
+	#$(RM) -r *.dSYM
+
+#.PHONY: clean
+clean:
+	$(RM) *.o *.a *.so *~ $(TEST_NAME) $(LIB_DIR)/$(LIB_NAME) $(LIB_DIR)/$(DBG_LIB_NAME) \
+	$(LIB_DIR)/$(LIBS_DIR_NAME)  *.bak *.out core \
+	$(BIN_DIR)/$(BIN_DIR_NAME) $(INC_DIR)/$(INC_DIR_C_NAME) $(INC_DIR)/$(INC_DIR_CPP_NAME) 
+	$(RM) -r *.dSYM	*.out *.o
+
+# release objects:
+.c.o: $*.h 
+	$(CC) $(CFLAGS) $(RELEASE_FLAGS) -c $*.c -o $(@)
+
+.cpp.o: $*.h 
+	$(CPP) $(CPPFLAGS) $(CPPRELEASE_FLAGS) -c $*.cpp -o $(@)
+
+# debug objects:
+$(CDBG_OBJS): %.dbg.o: %.h 
+$(CDBG_OBJS): %.dbg.o: %.c 
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $*.c -o $(@)
+
+$(CPPDBG_OBJS): %.dbg.o: %.h
+$(CPPDBG_OBJS): %.dbg.o: %.cpp 
+	$(CPP) $(CPPFLAGS) $(CPPDEBUG_FLAGS) -c $*.cpp -o $(@)
+
+# rules to create "release mode" shared objects (.so):
+$(C_SHARED_OBJS): lib%.so: %.h 
+$(C_SHARED_OBJS): lib%.so: %.c 
+	$(CC) $(CFLAGS) $(RELEASE_FLAGS) -shared -fPIC -o $(@) $<
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+$(CPP_SHARED_OBJS): lib%.so: %.h 
+$(CPP_SHARED_OBJS): lib%.so: %.cpp 
+	$(CPP) $(CPPFLAGS) $(CPPRELEASE_FLAGS) -shared -fPIC -o $(@) $<
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+# rules to create "debug mode" shared objects (.dbg.so) :
+$(CDBG_SHARED_OBJS): lib%.dbg.so: %.h 
+$(CDBG_SHARED_OBJS): lib%.dbg.so: %.c 
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -shared -fPIC -o $(@) $<
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+$(CPPDBG_SHARED_OBJS): lib%.dbg.so: %.h 
+$(CPPDBG_SHARED_OBJS): lib%.dbg.so: %.cpp 
+	$(CPP) $(CPPFLAGS) $(CPPDEBUG_FLAGS) -shared -fPIC -o $(@) $<
+	$(LN) $(PWD)/$(@) $(LIB_DIR)
+
+test%.out: test%.cpp $(LIB_NAME) 
+	$(CPP) $(CPPFLAGS) $(CPPRELEASE_FLAGS) $< $(LDFLAGS) $(LIBS) -o $(@)
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+
+test%.dbg.out: test%.cpp $(DBG_LIB_NAME) 
+	$(CPP) $(CPPFLAGS) $(CPPDEBUG_FLAGS) $< $(LDFLAGS) $(DBG_LIBS) -o $(@)
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+
+test%.out: test%.c $(LIB_NAME) 
+	$(CC) $(CFLAGS) $(RELEASE_FLAGS) $< $(LDFLAGS) $(LIBS) -o $(@)
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+
+test%.dbg.out: test%.c $(DBG_LIB_NAME) 
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $< $(LDFLAGS) $(DBG_LIBS) -o $(@)
+	$(LN) $(PWD)/$(@) $(BIN_DIR)
+

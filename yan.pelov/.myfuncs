@@ -1,0 +1,80 @@
+alias svnadd='sudo svn add'
+alias svndel='sudo svn del'
+alias svnstat='svn status'
+alias svnallstat='svn status --show-updates'
+alias svncomm='sudo svn commit --message \"commited\" '
+alias svnup='sudo svn update'
+alias svnmv='sudo svn mv'
+alias svndiff='sudo svn diff'
+
+
+alias gc='gcc -std=c89 -pedantic -Wall -Werror -o newc'
+alias gct='gcc -std=c89 -pedantic -Wall -o newc'
+alias g++='g++ -std=c++98 -pedantic -Wall -Werror'
+
+#cp /media/student/MIZI/.myfuncs ~/work/
+#svnadd ~/work/.myfuncs
+#svncomm ~/work/
+#svnup ~/work/
+
+cf()
+{
+	if [ -z "$1" ]
+	then 
+	    echo "insert file name"          
+	else
+
+	echo "#include <stdio.h>
+
+int main(int argc,char **argv,char **envp) 
+{
+	return 0;
+
+}" > ~/Dropbox/progs/Proj/src/utils/"test"$1.c
+
+	echo " #include \"$1.h\" " > ~/Dropbox/progs/Proj/src/utils/$1.c
+
+	echo "#ifndef __RRR_H__
+#define  __RRR_H__
+#include \"$1.h\"
+#endif /*  __RRR_H__ */ " > ~/Dropbox/progs/Proj/src/utils/$1.h
+
+
+
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/$1.c &
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/$1.h &
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/"test"$1.c &
+
+fi
+}
+
+cppf()
+{
+	if [ -z "$1" ]
+	then 
+	    echo "insert file name"          
+	else
+
+	echo "#include <stdio.h>
+
+int main(int argc,char **argv,char **envp) 
+{
+	return 0;
+
+}" > ~/Dropbox/progs/Proj/src/utils/"test"$1.cpp
+
+	echo " #include \"$1.hh\" " > ~/Dropbox/progs/Proj/src/utils/$1.cpp
+
+	echo "#ifndef __RRR_HH__
+#define  __RRR_HH__
+#include \"$1.hh\"
+
+#endif /*  __RRR_HH__ */ " > ~/Dropbox/progs/Proj/src/utils/$1.hh
+
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/$1.cpp &
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/$1.hh &
+	~/eclipse/eclipse ~/Dropbox/progs/Proj/src/utils/"test"$1.cpp &
+
+fi
+}
+
