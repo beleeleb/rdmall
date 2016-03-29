@@ -1,1 +1,15 @@
 .DS_Store
+.cproject
+.project
+.metadata
+.project
+RemoteSystemsTempFiles
+*.dSYM
+.template
+.svn
+.metadata/
+.svn/
+.settings/
+*.xml
+.settings
+.swp
