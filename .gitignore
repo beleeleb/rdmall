@@ -13,3 +13,9 @@ RemoteSystemsTempFiles
 *.xml
 .settings
 .swp
+*.o
+*.so
+*.out
+*.a
+arch/
+include/
