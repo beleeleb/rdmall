@@ -73,7 +73,9 @@ int main (int argc, char** argv, char** evmp)
 	print_q(que1);
     
 	q_destroy(que1);
-	
+	q_destroy(que2);
+	q_destroy(que3);
+
     
 	return 0;
 }

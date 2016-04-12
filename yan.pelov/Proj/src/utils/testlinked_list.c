@@ -31,6 +31,8 @@ int main (int argc, char** argv, char** evm)
 	
 	find_list(root,root, new_f, (void*)5);
 	
+	destroy_list(&root);
+
 	return 0;
 }
 
