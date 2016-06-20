@@ -10,7 +10,7 @@ ARCH = linux64#choose your arch
 
 #ARCH = raspi
 
-PROJ_DIR = $(HOME)/work/cpp
+PROJ_DIR = $(HOME)/Dropbox/myeclipse20__7_15/yan.pelov/Proj
 INC_DIR = $(PROJ_DIR)/include
 SRC_DIR = $(PROJ_DIR)/src
 
@@ -25,15 +25,15 @@ CPPRELEASE_FLAGS = $(RELEASE_FLAGS)
 
 LIB_DIR = $(PROJ_DIR)/arch/$(ARCH)/libs
 BIN_DIR = $(PROJ_DIR)/arch/$(ARCH)/bin
-LDFLAGS = -L$(LIB_DIR) -L/usr/include/boost
+LDFLAGS = -L/Users/yan/Dropbox/boost_1_60_0/stage/lib/ #-L$(HOME)/Dropbox/boost_1_60_0/boost/stage/lib -L$(LIB_DIR)
 
 CFLAGS= -Wall -ansi -std=c89 -I$(INC_DIR) #-pedantic -Werror
-CPPFLAGS= -Wall -pedantic -I/usr/include/boost -std=c++11#?? -ansi -Werror
+CPPFLAGS= -Wall -pedantic -I$(HOME)/Dropbox/boost_1_60_0 -L$(HOME)/Dropbox/boost_1_60_0/boost/stage/lib -std=c++11#?? -ansi -Werror
 
 ifeq ($(ARCH),raspi) #instead of /home/guy/Dropbox/ write your own directory where you saved boost for rpi. 
 AR = /rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-ar $(ARFLAGS)
 CPP = /rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-g++ 
-CPPFLAGS = -Wall -pedantic -std=c++11 -I/home/student/Dropbox/boost_1_49_0 
-LDFLAGS = -L$(LIB_DIR) -L/home/student/Dropbox/boost_1_49_0/stage/lib 
+CPPFLAGS = -Wall -pedantic -std=c++11 -I$(HOME)/Dropbox/boost_1_60_0 
+LDFLAGS = -L$(LIB_DIR) -L$(HOME)/Dropbox/boost_1_60_0/stage/lib 
 endif
 

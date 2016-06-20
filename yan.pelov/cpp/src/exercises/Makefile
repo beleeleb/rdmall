@@ -2,15 +2,15 @@ include ../Makefile.header
 
 MODULE= exercises
 CFILE_ROOTS= 
-CPPFILE_ROOTS=#threadpool #bohan bitset callback  factory  string osit singleton initer factory
+CPPFILE_ROOTS=threadpool #bohan bitset callback  factory  string osit singleton initer factory
 
 # for .h files that don't have a .c or test*.c file:
 STAND_ALONE_H_FILES= 
-STAND_ALONE_CPPH_FILES= #lockthrow waitablequeue 
+STAND_ALONE_CPPH_FILES=  waitablequeue lockthrow
 #STAND_ALONE_H_FILES= global_constants.h
 
 # PROJ_LIBS is stuff we wrote that can be debugged and have a *.dbg version
-PROJ_LIBS=-l$(MODULE)
+#PROJ_LIBS=-l$(MODULE)
 # can be expanded as follows:
 #PROJ_LIBS=-l$(MODULE) -lwatchdog -lsomeotherthingwewrote
 # LIBS is the regular LIBS var of all LIBS we need to link with
